@@ -1,1 +1,8 @@
 pymongo == 4.2.0
+ipykernel
+pandas
+numpy
+matplotlib
+seaborn
+scikit-learn
+-e . #editable mode calls the find_packages()
