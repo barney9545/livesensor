@@ -5,4 +5,7 @@ numpy
 matplotlib
 seaborn
 scikit-learn
+pymongo[srv]
+xgboost==2.1.0
+python-dotenv == 1.0.1
 -e . #editable mode calls the find_packages()

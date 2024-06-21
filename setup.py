@@ -1,9 +1,9 @@
 from setuptools import setup,find_packages
 
 #->list[str] this is used for readablity of code and specifies that output is string
-def get_requirements()->list[str]:
+def get_requirements():
 
-    requirements = list[str] =[]
+    requirements =[]
 
     return requirements
 
