@@ -1,19 +1,20 @@
 from sensor.exception import SensorException
 import sys
 import os
-from sensor.utils import dump_csv_to_mongo
-
+from sensor.components.data_ingestion import DataIngestion
+from sensor.entity.config_entity import DataingestionConfig, TrainingPipelineConfig
+from sensor.data_access.sensor_data import SensorData
 if __name__ == "__main__":
 
-    filename = 'data.csv'
-    db = 'APS_DB'
-    collection = 'sensor'
-    
-
     try:
-        dump_csv_to_mongo(filename, db, collection)
+        training_pipeline_config = TrainingPipelineConfig()
+        data_ingestion_config = DataingestionConfig(training_pipeline_config)
+        di = DataIngestion(data_ingestion_config=data_ingestion_config)
+        di.initiate_data_ingestion()
     except Exception as e:
-        print(f"An error occurred: {e}")
+        raise SensorException(e,sys)
+
+            
 
     # try:
     #     try:
@@ -26,4 +27,3 @@ if __name__ == "__main__":
     # #to print just the custom error
     # except SensorException as e:
     #     print (e)
-        
