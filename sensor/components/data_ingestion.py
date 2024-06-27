@@ -83,5 +83,7 @@ class DataIngestion:
                 message="Data ingestion completed successfully",
                 error_message=None
             )
+            
+            return data_ingestion_artifact
         except Exception as e:
             raise SensorException(e,sys)

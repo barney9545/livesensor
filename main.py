@@ -4,13 +4,12 @@ import os
 from sensor.components.data_ingestion import DataIngestion
 from sensor.entity.config_entity import DataingestionConfig, TrainingPipelineConfig
 from sensor.data_access.sensor_data import SensorData
+from sensor.pipeline.training_pipeline import TrainingPipeline
 if __name__ == "__main__":
 
     try:
-        training_pipeline_config = TrainingPipelineConfig()
-        data_ingestion_config = DataingestionConfig(training_pipeline_config)
-        di = DataIngestion(data_ingestion_config=data_ingestion_config)
-        di.initiate_data_ingestion()
+        pp1 = TrainingPipeline()
+        pp1.run_pipeline()
     except Exception as e:
         raise SensorException(e,sys)
 
