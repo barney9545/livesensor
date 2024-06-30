@@ -28,3 +28,20 @@ class DataTransformationArtifact:
     is_transformed:bool
     message:str
     error_message:str
+
+@dataclass
+class ClassificationMetricArtifact:
+    f1_score:float
+    precision_score:float
+    recall_score:float
+    accuracy_score:float
+    roc_auc_score:float
+
+@dataclass
+class ModelTrainerArtifact:
+    trained_model_file_path:str
+    train_metric_artifact:ClassificationMetricArtifact
+    test_metric_artifact:ClassificationMetricArtifact
+    is_trained:bool
+    message:str
+    error_message:str

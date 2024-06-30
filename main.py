@@ -10,6 +10,7 @@ if __name__ == "__main__":
     try:
         pp1 = TrainingPipeline()
         pp1.run_pipeline()
+        
     except Exception as e:
         raise SensorException(e,sys)
 

@@ -5,8 +5,9 @@ from sensor.logger import logging
 from sensor.components.data_ingestion import DataIngestion
 from sensor.components.data_validation import DataValidation
 from sensor.components.data_transformation import DataTransformation
-from sensor.entity.config_entity import TrainingPipelineConfig,DataingestionConfig,DataValidationConfig,DataTransformationConfig
-from sensor.entity.artifacts_entity import DataIngestionArtifact,DataValidationArtifact,DataTransformationArtifact
+from sensor.components.model_trainer import ModelTrainer
+from sensor.entity.config_entity import TrainingPipelineConfig,DataingestionConfig,DataValidationConfig,DataTransformationConfig,ModelTrainerConfig
+from sensor.entity.artifacts_entity import DataIngestionArtifact,DataValidationArtifact,DataTransformationArtifact, ModelTrainerArtifact
 
 class TrainingPipeline:
     def __init__(self):
@@ -53,6 +54,18 @@ class TrainingPipeline:
         
         except Exception as e:
             raise SensorException(e,sys)
+    
+    def start_model_trainer(self,data_transformation_artifact:DataTransformationArtifact) -> ModelTrainerArtifact:
+        try:
+            self.data_transformation_artifact = data_transformation_artifact
+            self.model_trainer_config = ModelTrainerConfig(training_pipeline_config=self.training_pipeline_config)
+            logging.info("Starting model trainer")
+            self.model_trainer = ModelTrainer(model_trainer_config=self.model_trainer_config,data_transformation_artifact=self.data_transformation_artifact)
+            self.model_trainer_artifact = self.model_trainer.initiate_model_trainer()
+            logging.info(f"Model trainer completed and artifact: {self.model_trainer_artifact}")
+            return self.model_trainer_artifact
+        except Exception as e:
+            raise SensorException(e,sys) from e
         
     def run_pipeline(self):
         try:
@@ -60,6 +73,7 @@ class TrainingPipeline:
             data_ingestion_artifact:DataIngestionArtifact = self.start_data_ingestion()
             data_validation_artifact: DataValidationArtifact = self.start_data_validation(data_ingestion_artifact)
             data_transformation_artifact: DataIngestionArtifact = self.start_data_transformation(data_validation_artifact)
+            model_trainer_artifact: ModelTrainerArtifact = self.start_model_trainer(data_transformation_artifact)
             logging.info(f"training pipeline completed")
             
             return data_transformation_artifact

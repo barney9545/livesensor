@@ -55,4 +55,14 @@ class DataTransformationConfig:
         
         except Exception as e:
             raise SensorException(e,sys)
-            
+
+class ModelTrainerConfig:
+    def __init__(self,training_pipeline_config:TrainingPipelineConfig):
+        try:
+            self.model_trainer_dir: str = os.path.join(training_pipeline_config.artifact_dir, training_pipeline.MODEL_TRAINER_DIR_NAME)
+            self.model_trainer_trained_model_dir: str = os.path.join(self.model_trainer_dir,training_pipeline.MODEL_TRAINER_TRAINED_MODEL_DIR_NAME) # model_trainer_trained_model_dir
+            self.model_trainer_trained_model_file_path: str = os.path.join(self.model_trainer_trained_model_dir,training_pipeline.MODEL_FILE_NAME)
+            self.expected_score: float = training_pipeline.MODEL_TRAINER_EXPECTED_SCORE
+            self.underfitting_overfitting_threshold: float = training_pipeline.MODEL_TRAINER_OVER_FITTING_UNDER_FITTING_THRESHOLD
+        except Exception as e:
+            raise SensorException(e,sys) from e

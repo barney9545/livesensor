@@ -13,4 +13,5 @@ PyYAML == 6.0.1
 dill == 0.3.8
 scipy
 imblearn
+xgboost
 -e . #editable mode calls the find_packages()
