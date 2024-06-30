@@ -8,12 +8,14 @@ import pandas as pd
 import numpy as np
 from sensor.data_access.sensor_data import SensorData
 from sklearn.model_selection import train_test_split
-
+from sensor.constant.training_pipeline import SCHEMA_FILE_PATH
+from sensor.utils.main_utils import read_yaml_file
 class DataIngestion:
     
     def __init__(self,data_ingestion_config:DataingestionConfig):
         try:
             self.data_ingestion_config = data_ingestion_config
+            self._schema_config = read_yaml_file(SCHEMA_FILE_PATH)
         except Exception as e:
             raise SensorException(e,sys)
     
@@ -28,6 +30,8 @@ class DataIngestion:
            logging.info("Exporting data into feature store")
            sensor_data = SensorData()
            dataframe = sensor_data.export_collection_to_df(collection_name=self.data_ingestion_config.collection_name)
+    
+           dataframe.drop(columns=self._schema_config["drop_columns"],inplace=True,axis=1)
            
            feature_store_file_path = self.data_ingestion_config.feature_store_dir
            

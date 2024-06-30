@@ -19,3 +19,12 @@ class DataValidationArtifact:
     is_validated:bool
     message:str
     error_message:str
+    
+@dataclass
+class DataTransformationArtifact:
+    transformed_train_file_path:str
+    transformed_test_file_path:str
+    transformed_object_file_path:str
+    is_transformed:bool
+    message:str
+    error_message:str

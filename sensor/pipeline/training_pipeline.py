@@ -4,8 +4,9 @@ from sensor.exception import SensorException
 from sensor.logger import logging
 from sensor.components.data_ingestion import DataIngestion
 from sensor.components.data_validation import DataValidation
-from sensor.entity.config_entity import TrainingPipelineConfig,DataingestionConfig,DataValidationConfig
-from sensor.entity.artifacts_entity import DataIngestionArtifact,DataValidationArtifact
+from sensor.components.data_transformation import DataTransformation
+from sensor.entity.config_entity import TrainingPipelineConfig,DataingestionConfig,DataValidationConfig,DataTransformationConfig
+from sensor.entity.artifacts_entity import DataIngestionArtifact,DataValidationArtifact,DataTransformationArtifact
 
 class TrainingPipeline:
     def __init__(self):
@@ -40,14 +41,28 @@ class TrainingPipeline:
         
         except Exception as e:
             raise SensorException(e,sys)
-    
+    def start_data_transformation(self,data_validation_artifact:DataValidationArtifact) -> DataTransformationArtifact:
+        try:
+            self.data_validation_artifact = data_validation_artifact
+            self.data_transformation_config = DataTransformationConfig(training_pipeline_config=self.training_pipeline_config)
+            logging.info("Starting data transformation")
+            self.data_transformation = DataTransformation(data_validation_artifact=self.data_validation_artifact,data_transformation_config=self.data_transformation_config)
+            self.data_transformation_artifact = self.data_transformation.initiate_data_transformation()
+            logging.info(f"Data transformation completed and artifact: {self.data_transformation_artifact}")
+            return self.data_transformation_artifact
+        
+        except Exception as e:
+            raise SensorException(e,sys)
+        
     def run_pipeline(self):
         try:
             logging.info(f"Starting training pipeline")
             data_ingestion_artifact:DataIngestionArtifact = self.start_data_ingestion()
             data_validation_artifact: DataValidationArtifact = self.start_data_validation(data_ingestion_artifact)
+            data_transformation_artifact: DataIngestionArtifact = self.start_data_transformation(data_validation_artifact)
             logging.info(f"training pipeline completed")
-            return data_ingestion_artifact,data_validation_artifact
+            
+            return data_transformation_artifact
         except Exception as e:
             raise SensorException(e,sys)
                 

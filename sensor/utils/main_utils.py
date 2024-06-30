@@ -29,6 +29,41 @@ def write_yaml_file(file_path:str, content : object, replace : bool = False) -> 
         logging. info('Yaml file created successfully')
     except Exception as e:
         raise SensorException(e,sys)
+    
+def save_numpy_array_data(file_path: str, array: np.array) ->None:
+    try:
+        dir_path = os.path.dirname(file_path)
+        os.makedirs(dir_path, exist_ok=True)
+        
+        with open(file_path, 'wb') as file_obj:
+            np.save(file_obj, array)
+        
+        logging.info('Numpy array data is saved in file successfully')
+    
+    except Exception as e:
+        raise SensorException(e, sys)
+    
+def load_numpy_array_data(file_path: str) -> np.array:
+    try:
+        with open(file_path, 'rb') as file_obj:
+            array = np.load(file_obj)
+            logging.info('Numpy array data is loaded in file successfully')
+            return array
+
+    except Exception as e:
+        raise SensorException(e, sys)
+
+def save_object(file_path: str, obj: object) -> None:
+    try:
+        logging.info("Entered save_object method of main utils")
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        with open(file_path, "wb") as file_obj:
+            #dill is used for serialization of complex objects
+            dill.dump(obj, file_obj)
+        logging.info("Object saved in file successfully")
+        
+    except Exception as e:
+        raise SensorException(e, sys)
         
 
 
