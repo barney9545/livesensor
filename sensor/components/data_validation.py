@@ -62,7 +62,7 @@ class DataValidation:
         except Exception as e:
             raise SensorException(e,sys)
     
-    def detect_dataset_drift(self,base:pd.DataFrame,current:pd.DataFrame,threshold = 0.01) -> bool:
+    def detect_dataset_drift(self,base:pd.DataFrame,current:pd.DataFrame,threshold = 0.005) -> bool:
         try:
             status = False
             #if status is true, drift is detected

@@ -6,8 +6,10 @@ from sensor.components.data_ingestion import DataIngestion
 from sensor.components.data_validation import DataValidation
 from sensor.components.data_transformation import DataTransformation
 from sensor.components.model_trainer import ModelTrainer
-from sensor.entity.config_entity import TrainingPipelineConfig,DataingestionConfig,DataValidationConfig,DataTransformationConfig,ModelTrainerConfig
-from sensor.entity.artifacts_entity import DataIngestionArtifact,DataValidationArtifact,DataTransformationArtifact, ModelTrainerArtifact
+from sensor.components.mode_evaluation import ModelEvaluation
+from sensor.components.model_pusher import ModelPusher
+from sensor.entity.config_entity import TrainingPipelineConfig,DataingestionConfig,DataValidationConfig,DataTransformationConfig,ModelTrainerConfig,ModelEvaluationConfig,ModelPusherConfig
+from sensor.entity.artifacts_entity import DataIngestionArtifact,DataValidationArtifact,DataTransformationArtifact, ModelTrainerArtifact,ModelEvaluationArtifact,ModelPusherArtifact
 
 class TrainingPipeline:
     def __init__(self):
@@ -67,16 +69,48 @@ class TrainingPipeline:
         except Exception as e:
             raise SensorException(e,sys) from e
         
-    def run_pipeline(self):
+    def start_model_evaluation(self, data_validation_artifact: DataValidationArtifact, model_trainer_artifact:ModelTrainerArtifact) -> ModelEvaluationArtifact:
+        try:
+            self.model_trainer_artifact = model_trainer_artifact 
+            self.model_evaluation_config = ModelEvaluationConfig(training_pipeline_config=self.training_pipeline_config)
+            logging.info("Starting model evaluation")
+            self.model_evaluation = ModelEvaluation(model_evaluation_config=self.model_evaluation_config,
+                                                    data_validation_artifact=data_validation_artifact,
+                                                    model_trainer_artifact=self.model_trainer_artifact) 
+            self.model_evaluation_artifact = self.model_evaluation.intiate_model_evaluation()
+            logging.info(f"Model evaluation completed and artifact: {self.model_evaluation_artifact}")
+            return self.model_evaluation_artifact
+        except Exception as e:
+            raise SensorException(e,sys) from e    
+        
+    def start_model_pusher(self, model_evaluation_artifact: ModelEvaluationArtifact) -> ModelPusherArtifact: 
+        try:
+            self.model_evaluation_artifact = model_evaluation_artifact
+            self.model_pusher_config = ModelPusherConfig(training_pipeline_config=self.training_pipeline_config)
+            logging.info("Starting model pusher")
+            self.model_pusher = ModelPusher(model_pusher_config=self.model_pusher_config,
+                                            model_evaluation_artifact=self.model_evaluation_artifact)
+            self.model_pusher_artifact = self.model_pusher.initiate_model_pusher()
+            logging.info(f"Model pusher completed and artifact: {self.model_pusher_artifact}")
+            return self.model_pusher_artifact
+        except Exception as e:
+            raise SensorException(e,sys) from e
+         
+    def run_pipeline(self)-> None:
         try:
             logging.info(f"Starting training pipeline")
             data_ingestion_artifact:DataIngestionArtifact = self.start_data_ingestion()
             data_validation_artifact: DataValidationArtifact = self.start_data_validation(data_ingestion_artifact)
             data_transformation_artifact: DataIngestionArtifact = self.start_data_transformation(data_validation_artifact)
             model_trainer_artifact: ModelTrainerArtifact = self.start_model_trainer(data_transformation_artifact)
+            model_evaluation_artifact: ModelEvaluationArtifact = self.start_model_evaluation(data_validation_artifact=data_validation_artifact,
+                                                                                             model_trainer_artifact=model_trainer_artifact)
+            if not model_evaluation_artifact.is_model_accepted:
+                raise Exception("Trained model is not better than the base model")
+            model_pusher_artifact: ModelPusherArtifact = self.start_model_pusher(model_evaluation_artifact)
             logging.info(f"training pipeline completed")
             
-            return data_transformation_artifact
+            return 
         except Exception as e:
             raise SensorException(e,sys)
                 

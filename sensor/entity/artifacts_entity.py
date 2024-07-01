@@ -45,3 +45,21 @@ class ModelTrainerArtifact:
     is_trained:bool
     message:str
     error_message:str
+
+@dataclass
+class ModelEvaluationArtifact:
+    is_model_accepted:bool
+    improved_accuracy:float
+    best_model_path:str
+    trained_model_path:str
+    train_model_metric_artifact:ClassificationMetricArtifact
+    best_model_metric_artifact:ClassificationMetricArtifact
+    message:str
+    error_message:str
+
+@dataclass
+class ModelPusherArtifact:
+    saved_model_path:str
+    model_file_path:str
+    message:str
+    error_message:str

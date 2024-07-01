@@ -66,3 +66,25 @@ class ModelTrainerConfig:
             self.underfitting_overfitting_threshold: float = training_pipeline.MODEL_TRAINER_OVER_FITTING_UNDER_FITTING_THRESHOLD
         except Exception as e:
             raise SensorException(e,sys) from e
+        
+class ModelEvaluationConfig:
+    def __init__(self,training_pipeline_config:TrainingPipelineConfig):
+        try:
+            self.model_evaluation_dir = os.path.join(training_pipeline_config.artifact_dir, training_pipeline.MODEL_EVALUATION_DIR_NAME)
+            self.mode_evaluation_report_file_path = os.path.join(self.model_evaluation_dir, training_pipeline.MODEL_EVALUATION_REPORT_FILE_NAME)
+            self.model_evaluation_threshold = training_pipeline.MODEL_EVALUATION_CHANGED_THRESHOLD_SCORE
+        except Exception as e:
+            raise SensorException(e,sys) from e
+        
+class ModelPusherConfig:
+    def __init__(self,training_pipeline_config:TrainingPipelineConfig):
+        try:
+            self.model_pusher_dir = os.path.join(training_pipeline_config.artifact_dir, training_pipeline.MODEL_PUSHER_DIR_NAME)
+            self.model_file_path = os.path.join(self.model_pusher_dir, training_pipeline.MODEL_FILE_NAME) 
+            
+            #saved models
+            timesstamp = dt.now().strftime("%Y%m%d%H%M%S")
+            self.saved_model_path = os.path.join(training_pipeline.SAVED_MODEL_DIR, f"{timesstamp}",training_pipeline.MODEL_FILE_NAME)
+            
+        except Exception as e:
+            raise SensorException(e,sys) from e
