@@ -22,9 +22,9 @@ class MongoClient:
             mongo_db_url = os.getenv(MONGO_DB_URL_KEY)
             if mongo_db_url is None:
                 raise SensorException(
-                    message = f"Environment variable: {MONGO_DB_URL_KEY} is not set"
+                    message = f"Environment variable: ""MONGO_DB_URL_KEY"" is not set"
                 )
-            logging.info(msg=f'mongo db url: {mongo_db_url}')
+            logging.info(msg=f'mongo db url fetched successfully')
             
             """ if 'localhost' in mongo_db_url:
                 self.client = pymongo.MongoClient(mongo_db_url)

@@ -34,14 +34,18 @@ try:
     async def index():
         return RedirectResponse(url="/docs")
     
-    # @app.get("/train")
-    # def main():
-        # try:
-        #     pp1 = TrainingPipeline()
-        #     pp1.run_pipeline()
-        # except Exception as e:
-        #     logging.info(e)
-        #     raise SensorException(e,sys) from e
+    @app.get("/train")
+    async def main():
+        try:
+            pp1 = TrainingPipeline()
+            if pp1.is_pipeline_running():
+                return Response("Training is in progress, please wait until it ends")
+            pp1.run_pipeline()
+            return Response("Training successful!")
+        
+        except Exception as e:
+            logging.info(e)
+            return Response(f"Error Occurred! {e}")
     
     #@app.get("/predict")
     
